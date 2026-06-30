@@ -10,7 +10,9 @@ export default function Songs() {
       <div className="header">
         <p>Songs</p>
         <div className="controls">
-          <button id="add-album">Add Album</button>
+          <button id="add-album" onClick={addAlbum}>
+            Add Album
+          </button>
           <button id="add-song">Add Song</button>
         </div>
       </div>
