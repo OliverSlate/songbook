@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 export default function Songs() {
+  //@ts-ignore
   const [data, setData] = useState(() => {
     const stored = localStorage.getItem("songs");
     return stored ? JSON.parse(stored) : { releases: [] };

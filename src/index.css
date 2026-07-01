@@ -6,7 +6,7 @@
   --surface-secondary: #161616;
   --border-s: #1e1e1e;
   --border-def: #222222;
-  --text-primary: #c8c8c8;
+  --text-primary: #e0e0e0;
   --text-sec: #888888;
   --text-muted: #555555;
   --accent: #c05635;
@@ -29,6 +29,20 @@ button {
 button:hover {
   cursor: pointer;
   background-color: #161616;
+}
+input, textarea {
+  padding: 12px;
+  color: var(--bg);
+  font-size: 1.2rem;
+}
+.submit {
+  padding: 12px;
+  background-color: var(--accent);
+  color: var(--text-primary);
+  font-size: 1.2rem;
+}
+.submit:hover {
+  background-color: var(--accent-light);
 }
 .active {
   background-color: var(--border-def);
@@ -94,12 +108,16 @@ button:hover {
   margin-right: 20px;
 }
 .controls button, #add-task {
-  margin: 12px;
+  margin: 12px auto;
   padding: 12px;
   font-weight: 600;
   background-color: var(--accent);
   border: 1px solid var(--border-def);
   border-radius: 12px;
+  max-width: 100px;
+}
+.controls button:first-of-type {
+  margin-right: 12px;
 }
 .controls button:hover, #add-task:hover {
   background-color: var(--accent-light);
@@ -120,22 +138,54 @@ button:hover {
 .releases, .tasks {
   grid-column: 1;
   border-right: 1px solid var(--border-def)!important;
-  min-height: 92vh;
+  height: 92vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 .releases *, .tasks * {
   margin: auto;
+}
+.tasks {
+  display: block;
 }
 .current {
   grid-column: 2;
   min-height: 92vh;
   padding: 5%;
 }
-.tasks div{
-  display: flex;
-  flex-direction: column;
+.tasks .task {
+  margin-top: 24px;
+  width: 40%;
+  min-height: 70px;
+  background-color: var(--surface-secondary);
+  text-align: left;
+  padding: 12px;
+  border: 2px solid var(--border-def);
+  border-radius: 18px;
+  position: relative;
+}
+.update { 
+   position: absolute;
+  top: 10px;
+  right: 50px;
+  background-image: url(./assets/edit-icon-light.png);
+  width: 35px;
+  aspect-ratio: 1/1;
+  background-position: center;
+  background-size: contain;
+    filter:brightness(0.5);
+
+}
+.delete {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background-image: url(./assets/delete-icon-light.png);
+  width: 35px;
+  aspect-ratio: 1/1;
+  background-position: center;
+  background-size: contain;
+  filter:brightness(0.5);
 }
 .vignette {
   position: absolute;
@@ -143,10 +193,46 @@ button:hover {
   left: 0;
   width: 100%;
   height: 100vh;
-  background-color: #0000002d;
+  background-color: #00000034;
 }
 .view {
-  width: 80%;
-  height: 80vh;
-  margin: auto;
+  width: 60%;
+  min-height: 80vh;
+  margin: 10vh auto;
+  padding: 5%;
+  background-color: var(--surface-secondary);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.view * {
+  margin: 12px auto;
+}
+.exit {
+  position: absolute;
+  top: 0px;
+  left: 12px;
+  width: 50px;
+  height: 50px;
+  background-color: var(--border-def);
+  font-weight: 900;
+  font-size: 1.3em;
+  border-radius: 50%;
+}
+.task-title {
+  font-family: "DM Mono";
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 1.3rem;
+}
+.task-content {
+  font-family: "DM Mono";
+  color: var(--text-sec);
+}
+.no-task {
+  width: 100%;
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
 }
