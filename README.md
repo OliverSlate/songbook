@@ -1,66 +1,77 @@
-# Songbook
+# React + TypeScript + Vite
 
-**A local-first organizer for musicians who need every release, song, and lyric sheet in order before they hit record.**
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white&labelColor=20232a)
-![TypeScript](https://img.shields.io/badge/TypeScript-Vite-3178C6?logo=typescript&logoColor=white&labelColor=20232a)
-![Node](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white&labelColor=20232a)
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![License](https://img.shields.io/badge/license-MIT-blue)
+Currently, two official plugins are available:
 
----
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Why?
+## React Compiler
 
-Recording sessions and music work often falls apart with no clear structure - lyrics in your phone's notes app, or in a random notebook, ideas scattered through different files, group chats, notebooks (sounds familiar?).
-**Songbook** aims to fix that problem and increase productivity by keeping every part of the recording process structured in views - albums, songs, and their respective tasks are kept in a hierarchical, easily readable structure so the only thing you have to worry about is recording.
+The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
 
----
+Note: This will impact Vite dev & build performances.
 
-## Features
+## Expanding the ESLint configuration
 
-**Releases & Songs**
-Albums and songs are organized in a browsable hierarchy — click a release to see its title, release date, and full tracklist; click a song to view its title, key, tempo, and section list.
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-**Section-level editing**
-Every song section (verse, chorus, whatever) is individually editable — take notes, or save lyrics for future reference.
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-**Task tracking**
-Tasks can be generic or linked to specific songs - break down the full recording process into small, manageable tasks to think more about recording and less about "what am i supposed to do now".
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-**Local-first persistence**
-All data is saved to `localStorage` and persists across sessions - no account registration needed.
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
-**Import & Export**
-Dump your entire library (albums, songs, tasks) to a single JSON file for backup. Importing data from another device with JSON. This allows for syncing data across devices with no need for creating an account with your email and personal data.
-
----
-
-## Getting Started
-
-You can visit the website @ customsongbook.vercel.app
-Or if you want to work locally with git:
-
-```bash
-# clone the repo
-git clone https://github.com/OliverSlate/songbook.git
-cd songbook
-
-# install any missing dependencies
-npm install
-
-# run the app!
-npm run dev
-o
 ```
 
----
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## Roadmap
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-- [ ] Import/Export
-- [ ] "Notes" view
-- [ ] "Audio" view for uploading and organizing voice notes
-- [ ] Easier section reordering
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
-[^note]: under the oath of AI hatred, i swear with every cell of my body no ai was used in this.
+```
