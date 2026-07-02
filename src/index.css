@@ -60,7 +60,7 @@ input, textarea {
   min-height: 100vh;
   max-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 5fr;
+  grid-template-columns: 1fr 7fr;
 }
 .left {
   grid-column: 1;
@@ -235,4 +235,34 @@ input, textarea {
   margin-top: 100px;
   display: flex;
   flex-direction: column;
+}
+.release-group {
+  margin-top: 20px;
+  min-width: 200px;
+}
+.release-item {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--surface-secondary);
+  border: 2px solid var(--border-def);
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-family: "DM Mono";
+  font-weight: 600;
+}
+.release-group .song-item {
+  margin-left: 24px;
+  margin-top: -2px;
+  border-radius: 0;
+}
+.release-group .song-item:not(.song-item ~ .song-item) {
+  border-top-right-radius: 12px;
+}
+.release-group .song-item:last-of-type {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.selected {
+  background-color: var(--border-def);
 }

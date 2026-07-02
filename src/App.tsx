@@ -1,7 +1,5 @@
 import { useState } from "react";
-//@ts-ignore
 import Songs from "./components/Songs";
-//@ts-ignore
 import Todo from "./components/Todo";
 
 function App() {
