@@ -36,7 +36,7 @@ Dump your entire library (albums, songs, tasks) to a single JSON file for backup
 
 ## Getting Started
 
-You can visit the [website](customsongbook.vercel.app)<br/>
+You can visit the [website](https://customsongbook.vercel.app)<br/>
 Or if you want to work locally with git:
 
 ```bash
