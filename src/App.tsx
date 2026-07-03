@@ -2,8 +2,15 @@ import { useState } from "react";
 import Songs from "./components/Songs";
 import Todo from "./components/Todo";
 
+type AppState = "Songs" | "Todo" | "Data";
+
 function App() {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [appState, setAppState] = useState<AppState>("Songs");
+  const views = {
+    Songs: <Songs></Songs>,
+    Todo: <Todo></Todo>,
+    Data: <p>Data view in the future</p>,
+  };
   return (
     <>
       <div className="main">
@@ -13,21 +20,25 @@ function App() {
           </div>
           <p>VIEWS</p>
           <button
-            className={currentPage === 0 ? "active" : ""}
-            onClick={() => setCurrentPage(0)}
+            className={appState === "Songs" ? "active" : ""}
+            onClick={() => setAppState("Songs")}
           >
             Songs
           </button>
           <button
-            className={currentPage === 1 ? "active" : ""}
-            onClick={() => setCurrentPage(1)}
+            className={appState === "Todo" ? "active" : ""}
+            onClick={() => setAppState("Todo")}
           >
             To Do
           </button>
+          <button
+            className={appState === "Data" ? "active" : ""}
+            onClick={() => setAppState("Data")}
+          >
+            Data
+          </button>
         </div>
-        <div className="right">
-          {currentPage === 0 ? <Songs></Songs> : <Todo></Todo>}
-        </div>
+        <div className="right">{views[appState]}</div>
       </div>
     </>
   );
