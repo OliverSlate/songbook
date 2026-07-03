@@ -67,16 +67,25 @@ export default function Songs() {
     /* 
       THIS FUNCTION IS TEMPORARY FOR DEVELOPMENT PURPOSES AND TESTING
     */
+    //temporary my ass
+    if (newAlbumName === "" || newRelDate === "") {
+      setErr("All fields must be non-empty.");
+      return;
+    }
     const newAlbum: Album = {
-      id: "0",
-      name: "test album",
-      releaseDate: "2026",
+      id: crypto.randomUUID(),
+      name: newAlbumName,
+      releaseDate: newRelDate,
     };
-    setAlbums((prev: any) => {
+    setAlbums((prev: { albums: Album[] }) => {
       const updated = { ...prev, albums: [...prev.albums, newAlbum] };
       localStorage.setItem("albums", JSON.stringify(updated));
       return updated;
     });
+    setNewAlbumName("");
+    setNewRelDate("");
+    setErr("");
+    setShowAddAlbum(false);
   }
   function addSong() {
     if (newSongName === "") {
@@ -102,13 +111,7 @@ export default function Songs() {
     setErr("");
     setShowAddSong(false);
   }
-  function addSection({
-    selected,
-    songs,
-  }: {
-    selected: Selection;
-    songs: Song[];
-  }) {
+  function addSection({ selected }: { selected: Selection }) {
     if (newSecName === "") {
       setErr("Name can't be empty.");
       return;
@@ -213,7 +216,7 @@ export default function Songs() {
       <div className="header">
         <p>Songs</p>
         <div className="controls">
-          <button id="add-album" onClick={addAlbum}>
+          <button id="add-album" onClick={() => setShowAddAlbum(true)}>
             Add Album
           </button>
           <button id="add-song" onClick={() => setShowAddSong(true)}>
@@ -264,6 +267,38 @@ export default function Songs() {
               </select>
               <button className="submit" onClick={() => addSong()}>
                 Add Song
+              </button>
+              <p>{err}</p>
+            </div>
+          </div>
+        )}
+        {showAddAlbum && (
+          <div className="vignette">
+            <div className="view">
+              <button
+                className="exit"
+                onClick={() => {
+                  setShowAddAlbum(false);
+                }}
+              >
+                X
+              </button>
+              <h3>Add Album</h3>
+              <input
+                type="text"
+                placeholder="Album Name"
+                value={newAlbumName}
+                onChange={(e) => setNewAlbumName(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Release Date"
+                value={newRelDate}
+                onChange={(e) => setNewRelDate(e.target.value)}
+              />
+
+              <button className="submit" onClick={() => addAlbum()}>
+                Add Album
               </button>
               <p>{err}</p>
             </div>
@@ -360,10 +395,7 @@ export default function Songs() {
               value={newSecContent}
               onChange={(e) => setNewSecContent(e.target.value)}
             ></textarea>
-            <button
-              className="submit"
-              onClick={() => addSection({ selected, songs })}
-            >
+            <button className="submit" onClick={() => addSection({ selected })}>
               Add Section
             </button>
             <p>{err}</p>
