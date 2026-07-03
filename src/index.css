@@ -334,5 +334,5 @@ li:last-of-type {
   color: var(--text-muted);
 }
 .sec-content {
-
+  white-space: pre-wrap;
 }
