@@ -1,32 +1,18 @@
-import { useState, useMemo } from "react";
-
-type Selection = { type: "album" | "song"; id: string } | null;
-type Album = {
-  id: string;
-  name: string;
-  releaseDate: string;
-};
-type Song = {
-  id: string;
-  name: string;
-  key: string;
-  tempo: string;
-  albumId: string | null;
-  sections: Section[];
-};
-type Section = {
-  order: number | undefined;
-  name: string;
-  content: string;
-};
+import { useMemo, useState } from "react";
+import AddAlbumModal from "./songs/AddAlbumModal";
+import AddSectionModal from "./songs/AddSectionModal";
+import AddSongModal from "./songs/AddSongModal";
+import CurrentPanel from "./songs/CurrentPanel";
+import ReleasesList from "./songs/ReleasesList";
+import SongsHeader from "./songs/SongsHeader";
+import type { Album, Selection, Section, Song } from "./songs/types";
 
 export default function Songs() {
-  //@ts-ignore
-  const [albums, setAlbums] = useState(() => {
+  const [albums, setAlbums] = useState<{ albums: Album[] }>(() => {
     const stored = localStorage.getItem("albums");
     return stored ? JSON.parse(stored) : { albums: [] };
   });
-  const [songs, setSongs] = useState(() => {
+  const [songs, setSongs] = useState<{ songs: Song[] }>(() => {
     const stored = localStorage.getItem("songs");
     return stored ? JSON.parse(stored) : { songs: [] };
   });
@@ -64,7 +50,7 @@ export default function Songs() {
   const [err, setErr] = useState("");
 
   function addAlbum() {
-    /* 
+    /*
       THIS FUNCTION IS TEMPORARY FOR DEVELOPMENT PURPOSES AND TESTING
     */
     //temporary my ass
@@ -87,6 +73,7 @@ export default function Songs() {
     setErr("");
     setShowAddAlbum(false);
   }
+
   function addSong() {
     if (newSongName === "") {
       setErr("Song name can't be empty.");
@@ -100,7 +87,7 @@ export default function Songs() {
       albumId: newAlbumId,
       sections: [],
     };
-    setSongs((prev: any) => {
+    setSongs((prev: { songs: Song[] }) => {
       const updated = { ...prev, songs: [...prev.songs, newSong] };
       localStorage.setItem("songs", JSON.stringify(updated));
       return updated;
@@ -111,6 +98,7 @@ export default function Songs() {
     setErr("");
     setShowAddSong(false);
   }
+
   function addSection({ selected }: { selected: Selection }) {
     if (newSecName === "") {
       setErr("Name can't be empty.");
@@ -137,270 +125,87 @@ export default function Songs() {
     setErr("");
     setShowAddSec(false);
   }
-  function CurrentPanel({
-    selected,
-    albums,
-    songs,
-  }: {
-    selected: Selection;
-    albums: Album[];
-    songs: Song[];
-  }) {
-    if (!selected)
-      return (
-        <p className="muted">Select an album or song to see its information</p>
-      );
 
-    if (selected.type === "album") {
-      const album = albums.find((a) => a.id === selected.id);
-      if (!album) return null;
-      const albumSongs = songs.filter((s) => s.albumId === album.id);
-      return (
-        <div>
-          <h2 className="view-title">{album.name}</h2>
-          <div className="view-info">
-            <p className="info">{album.releaseDate}</p>
-          </div>
-          <h3>Tracklist:</h3>
-          <ul>
-            {albumSongs.map((s) => (
-              <li
-                key={s.id}
-                onClick={() => setSelected({ type: "song", id: s.id })}
-              >
-                {s.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-
-    const song = songs.find((s) => s.id === selected.id);
-    if (!song) return null;
-    return (
-      <div>
-        <h2 className="view-title">{song.name}</h2>
-        <div className="view-info">
-          <p className="info">Key: {song.key}</p>
-          <p className="info">{song.tempo} BPM</p>
-        </div>
-        <div className="sections">
-          {song.sections.map((sec) => (
-            <div className="section" key={sec.order}>
-              <p className="sec-name">{sec.name.toUpperCase()}</p>
-              <p className="sec-content">{sec.content}</p>
-            </div>
-          ))}
-          {song.sections.length === 0 ? (
-            <>
-              <h4>This song has no sections yet.</h4>
-              <button className="add-sec" onClick={() => setShowAddSec(true)}>
-                Add a section
-              </button>
-            </>
-          ) : (
-            <button
-              className="add-sec non-empty"
-              onClick={() => setShowAddSec(true)}
-            >
-              +
-            </button>
-          )}
-        </div>
-      </div>
-    );
+  function selectAlbum(albumId: string) {
+    if (albumId === selected?.id && selected?.type === "album") {
+      setSelected(null);
+    } else setSelected({ type: "album", id: albumId });
   }
+
+  function selectSong(songId: string) {
+    if (songId === selected?.id && selected?.type === "song") {
+      setSelected(null);
+    } else setSelected({ type: "song", id: songId });
+  }
+
   return (
     <>
-      <div className="header">
-        <p>Songs</p>
-        <div className="controls">
-          <button id="add-album" onClick={() => setShowAddAlbum(true)}>
-            Add Album
-          </button>
-          <button id="add-song" onClick={() => setShowAddSong(true)}>
-            Add Song
-          </button>
-        </div>
+      <SongsHeader
+        onAddAlbum={() => setShowAddAlbum(true)}
+        onAddSong={() => setShowAddSong(true)}
+      >
         {showAddSong && (
-          <div className="vignette">
-            <div className="view">
-              <button
-                className="exit"
-                onClick={() => {
-                  setShowAddSong(false);
-                }}
-              >
-                X
-              </button>
-              <h3>Add Song</h3>
-              <input
-                type="text"
-                placeholder="Song Name"
-                value={newSongName}
-                onChange={(e) => setNewSongName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Key"
-                value={newSongKey}
-                onChange={(e) => setNewSongKey(e.target.value)}
-              />
-              <input
-                type="number"
-                placeholder="Tempo"
-                value={newSongTempo}
-                onChange={(e) => setNewSongTempo(e.target.value)}
-              />
-              <select
-                name="newAlbumId"
-                id="newAlbumId"
-                onChange={(e) => setNewAlbumId(e.target.value)}
-              >
-                <option value="">Single</option>
-                {albums.albums.map((album: Album) => (
-                  <option key={album.id} value={album.id}>
-                    {album.name}
-                  </option>
-                ))}
-              </select>
-              <button className="submit" onClick={() => addSong()}>
-                Add Song
-              </button>
-              <p>{err}</p>
-            </div>
-          </div>
+          <AddSongModal
+            albums={albums.albums}
+            newSongName={newSongName}
+            newSongKey={newSongKey}
+            newSongTempo={newSongTempo}
+            err={err}
+            onClose={() => {
+              setShowAddSong(false);
+            }}
+            onSongNameChange={setNewSongName}
+            onSongKeyChange={setNewSongKey}
+            onSongTempoChange={setNewSongTempo}
+            onAlbumChange={setNewAlbumId}
+            onSubmit={() => addSong()}
+          />
         )}
         {showAddAlbum && (
-          <div className="vignette">
-            <div className="view">
-              <button
-                className="exit"
-                onClick={() => {
-                  setShowAddAlbum(false);
-                }}
-              >
-                X
-              </button>
-              <h3>Add Album</h3>
-              <input
-                type="text"
-                placeholder="Album Name"
-                value={newAlbumName}
-                onChange={(e) => setNewAlbumName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Release Date"
-                value={newRelDate}
-                onChange={(e) => setNewRelDate(e.target.value)}
-              />
-
-              <button className="submit" onClick={() => addAlbum()}>
-                Add Album
-              </button>
-              <p>{err}</p>
-            </div>
-          </div>
+          <AddAlbumModal
+            newAlbumName={newAlbumName}
+            newRelDate={newRelDate}
+            err={err}
+            onClose={() => {
+              setShowAddAlbum(false);
+            }}
+            onAlbumNameChange={setNewAlbumName}
+            onReleaseDateChange={setNewRelDate}
+            onSubmit={() => addAlbum()}
+          />
         )}
-      </div>
+      </SongsHeader>
       <div className="songs">
-        <div className="releases">
-          {isEmpty && <p>You have no releases!</p>}
-          {albumTree.map(
-            ({ album, songs }: { album: Album; songs: Song[] }) => (
-              <div key={album.id} className="release-group">
-                <div
-                  className={`release-item ${selected?.type === "album" && selected.id === album.id ? "selected" : ""}`}
-                  onClick={() => {
-                    if (
-                      album.id === selected?.id &&
-                      selected?.type === "album"
-                    ) {
-                      setSelected(null);
-                    } else setSelected({ type: "album", id: album.id });
-                  }}
-                >
-                  {album.name}
-                </div>
-                {songs.map((song: Song) => (
-                  <div
-                    key={song.id}
-                    className={`release-item song-item ${selected?.type === "song" && selected.id === song.id ? "selected" : ""}`}
-                    onClick={() => {
-                      if (
-                        song.id === selected?.id &&
-                        selected?.type === "song"
-                      ) {
-                        setSelected(null);
-                      } else setSelected({ type: "song", id: song.id });
-                    }}
-                  >
-                    {song.name}
-                  </div>
-                ))}
-              </div>
-            ),
-          )}
-
-          {singles.length > 0 && (
-            <div className="release-group">
-              <div className="release-item singles-label">Singles</div>
-              {singles.map((song: Song) => (
-                <div
-                  key={song.id}
-                  className={`release-item song-item ${selected?.type === "song" && selected.id === song.id ? "selected" : ""}`}
-                  onClick={() => {
-                    if (song.id === selected?.id && selected?.type === "song") {
-                      setSelected(null);
-                    } else setSelected({ type: "song", id: song.id });
-                  }}
-                >
-                  {song.name}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ReleasesList
+          isEmpty={isEmpty}
+          albumTree={albumTree}
+          singles={singles}
+          selected={selected}
+          onAlbumSelect={selectAlbum}
+          onSongSelect={selectSong}
+        />
         <div className="current">
           <CurrentPanel
             selected={selected}
             albums={albums.albums}
             songs={songs.songs}
-          ></CurrentPanel>
+            onSongSelect={(songId) => setSelected({ type: "song", id: songId })}
+            onAddSection={() => setShowAddSec(true)}
+          />
         </div>
       </div>
       {showAddSec && (
-        <div className="vignette">
-          <div className="view">
-            <button
-              className="exit"
-              onClick={() => {
-                setShowAddSec(false);
-              }}
-            >
-              X
-            </button>
-            <h3>Add Section</h3>
-            <input
-              type="text"
-              placeholder="Section Name"
-              value={newSecName}
-              onChange={(e) => setNewSecName(e.target.value)}
-            />
-            <textarea
-              rows={10}
-              placeholder="Content"
-              value={newSecContent}
-              onChange={(e) => setNewSecContent(e.target.value)}
-            ></textarea>
-            <button className="submit" onClick={() => addSection({ selected })}>
-              Add Section
-            </button>
-            <p>{err}</p>
-          </div>
-        </div>
+        <AddSectionModal
+          newSecName={newSecName}
+          newSecContent={newSecContent}
+          err={err}
+          onClose={() => {
+            setShowAddSec(false);
+          }}
+          onSectionNameChange={setNewSecName}
+          onSectionContentChange={setNewSecContent}
+          onSubmit={() => addSection({ selected })}
+        />
       )}
     </>
   );

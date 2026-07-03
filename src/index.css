@@ -296,6 +296,10 @@ li {
   border-bottom: 1px solid var(--border-s);
   width: 150px;
 }
+li:hover {
+  color: var(--text-primary);
+  cursor: pointer;
+}
 li:last-of-type {
   border: none;
 }
@@ -335,4 +339,5 @@ li:last-of-type {
 }
 .sec-content {
   white-space: pre-wrap;
+  line-height: 2;
 }
