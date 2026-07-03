@@ -55,6 +55,9 @@ input, textarea {
   color: var(--accent);
   font-weight: 800;
 }
+.muted {
+  color: var(--text-muted);
+}
 .main {
   width: 100%;
   min-height: 100vh;
@@ -238,7 +241,7 @@ input, textarea {
 }
 .release-group {
   margin-top: 20px;
-  min-width: 200px;
+  width: min(400px, 70%);
 }
 .release-item {
   width: 100%;
@@ -246,9 +249,9 @@ input, textarea {
   background-color: var(--surface-secondary);
   border: 2px solid var(--border-def);
   border-radius: 12px;
-  font-size: 1.2rem;
-  font-family: "DM Mono";
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-family: "DM Sans";
+  font-weight: 400;
 }
 .release-group .song-item {
   margin-left: 24px;
@@ -265,4 +268,37 @@ input, textarea {
 
 .selected {
   background-color: var(--border-def);
+}
+
+.view-info {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0px 15px 0px;
+}
+.info {
+  padding: 6px;
+  background-color: var(--surface-secondary);
+  border: 2px solid var(--border-def);
+  border-radius: 12px;
+  color: var(--accent-light);
+}
+.info:first-child {
+  margin-right: 10px;
+}
+li {
+  list-style: none;
+  padding: 10px 0px;
+  color: var(--text-sec);
+  border-bottom: 1px solid var(--border-s);
+  width: 150px;
+}
+li:last-of-type {
+  border: none;
+}
+.add-sec {
+  margin-top: 15px;
+  padding: 12px;
+  font-weight: 600;
+  background-color: var(--accent);
+  border-radius: 12px;
 }

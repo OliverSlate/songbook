@@ -15,7 +15,7 @@ type Song = {
   sections: Section[];
 };
 type Section = {
-  order: number;
+  order: number | undefined;
   name: string;
   content: string;
 };
@@ -48,6 +48,10 @@ export default function Songs() {
     [songs],
   );
 
+  const [showAddSec, setShowAddSec] = useState(false);
+  const [newSecName, setNewSecName] = useState("");
+  const [newSecContent, setNewSecContent] = useState("");
+
   function addAlbum() {
     /* 
       THIS FUNCTION IS TEMPORARY FOR DEVELOPMENT PURPOSES AND TESTING
@@ -78,6 +82,21 @@ export default function Songs() {
       return updated;
     });
   }
+  function addSection({
+    selected,
+    songs,
+  }: {
+    selected: Selection;
+    songs: Song[];
+  }) {
+    const song = songs.find((s: Song) => s.id === selected?.id);
+    const newSection: Section = {
+      order: song?.sections.length,
+      name: newSecName,
+      content: newSecContent,
+    };
+    console.log(newSection);
+  }
   function CurrentPanel({
     selected,
     albums,
@@ -87,7 +106,10 @@ export default function Songs() {
     albums: Album[];
     songs: Song[];
   }) {
-    if (!selected) return <p>Select an album or song to see its information</p>;
+    if (!selected)
+      return (
+        <p className="muted">Select an album or song to see its information</p>
+      );
 
     if (selected.type === "album") {
       const album = albums.find((a) => a.id === selected.id);
@@ -95,8 +117,11 @@ export default function Songs() {
       const albumSongs = songs.filter((s) => s.albumId === album.id);
       return (
         <div>
-          <h2>{album.name}</h2>
-          <p>{album.releaseDate}</p>
+          <h2 className="view-title">{album.name}</h2>
+          <div className="view-info">
+            <p className="info">{album.releaseDate}</p>
+          </div>
+          <h3>Tracklist:</h3>
           <ul>
             {albumSongs.map((s) => (
               <li
@@ -115,15 +140,59 @@ export default function Songs() {
     if (!song) return null;
     return (
       <div>
-        <h2>{song.name}</h2>
-        <p>
-          Key: {song.key} - {song.tempo} BPM
-        </p>
-        <ul>
+        <h2 className="view-title">{song.name}</h2>
+        <div className="view-info">
+          <p className="info">Key: {song.key}</p>
+          <p className="info">{song.tempo} BPM</p>
+        </div>
+        <div className="sections">
           {song.sections.map((sec) => (
-            <li key={sec.order}>{sec.name}</li>
+            <div className="section" key={sec.order}>
+              {sec.name}
+            </div>
           ))}
-        </ul>
+          {song.sections.length === 0 ? (
+            <>
+              <h4>This song has no sections yet.</h4>
+              <button className="add-sec" onClick={() => setShowAddSec(true)}>
+                Add a section
+              </button>
+            </>
+          ) : null}
+        </div>
+        {showAddSec && (
+          <div className="vignette">
+            <div className="view">
+              <button
+                className="exit"
+                onClick={() => {
+                  setShowAddSec(false);
+                }}
+              >
+                X
+              </button>
+              <h3>Add Section</h3>
+              <input
+                type="text"
+                placeholder="Section Name"
+                value={newSecName}
+                onChange={(e) => setNewSecName(e.target.value)}
+              />
+              <textarea
+                rows={10}
+                placeholder="Content"
+                value={newSecContent}
+                onChange={(e) => setNewSecContent(e.target.value)}
+              ></textarea>
+              <button
+                className="submit"
+                onClick={() => addSection({ selected, songs })}
+              >
+                Add Section
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
