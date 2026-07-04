@@ -38,12 +38,14 @@ export default function CurrentPanel({
     const albumSongs = songs.filter((s) => s.albumId === album.id);
     return (
       <div className="cur-view">
-        <button className="crud-btn" onClick={() => onEditAlbum(album)}>
-          Edit
-        </button>
-        <button className="crud-btn" onClick={() => onDeleteAlbum(album)}>
-          Delete
-        </button>
+        <div className="crud">
+          <button className="crud-btn" onClick={() => onEditAlbum(album)}>
+            Edit
+          </button>
+          <button className="crud-btn" onClick={() => onDeleteAlbum(album)}>
+            Delete
+          </button>
+        </div>
         <h2 className="view-title">{album.name}</h2>
         <div className="view-info">
           <p className="info">{album.releaseDate}</p>
@@ -64,12 +66,14 @@ export default function CurrentPanel({
   if (!song) return null;
   return (
     <div className="cur-view">
-      <button className="crud-btn" onClick={() => onEditSong(song)}>
-        Edit
-      </button>
-      <button className="crud-btn" onClick={() => onDeleteSong(song)}>
-        Delete
-      </button>
+      <div className="crud">
+        <button className="crud-btn" onClick={() => onEditSong(song)}>
+          Edit
+        </button>
+        <button className="crud-btn" onClick={() => onDeleteSong(song)}>
+          Delete
+        </button>
+      </div>
       <h2 className="view-title">{song.name}</h2>
       <div className="view-info">
         <p className="info">Key: {song.key}</p>
@@ -78,18 +82,20 @@ export default function CurrentPanel({
       <div className="sections">
         {song.sections.map((sec, index) => (
           <div className="section" key={sec.order}>
-            <button
-              className="crud-btn"
-              onClick={() => onEditSection(index, sec)}
-            >
-              Edit
-            </button>
-            <button
-              className="crud-btn"
-              onClick={() => onDeleteSection(index, sec)}
-            >
-              Delete
-            </button>
+            <div className="crud">
+              <button
+                className="crud-btn"
+                onClick={() => onEditSection(index, sec)}
+              >
+                Edit
+              </button>
+              <button
+                className="crud-btn"
+                onClick={() => onDeleteSection(index, sec)}
+              >
+                Delete
+              </button>
+            </div>
             <p className="sec-name">{sec.name.toUpperCase()}</p>
             <p className="sec-content">{sec.content}</p>
           </div>

@@ -77,7 +77,7 @@ option {
   flex-direction: column;
 }
 .header {
-  height: 70px;
+  height: 60px;
   padding: 12px 18px;
   font-family: "DM Sans";
   font-weight: 200;
@@ -212,6 +212,7 @@ option {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  z-index: 9999;
 }
 .view * {
   margin: 12px auto;
@@ -219,11 +220,11 @@ option {
 .exit {
   position: absolute;
   top: 0px;
-  left: 12px;
-  width: 50px;
-  height: 50px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
   font-weight: 900;
-  font-size: 1.3em;
+  font-size: 24px;
   border-radius: 50%;
 }
 .exit:hover {
@@ -275,7 +276,9 @@ option {
 .selected {
   background-color: var(--border-def);
 }
-
+.cur-view {
+  position: relative;
+}
 .view-info {
   display: flex;
   flex-direction: row;
@@ -326,6 +329,9 @@ li:last-of-type {
   justify-content: center;
   padding: 0;
 }
+.non-empty:hover {
+  background-color: var(--border-s);
+}
 .section {
   width: 90%;
   background-color: var(--surface-secondary);
@@ -333,6 +339,7 @@ li:last-of-type {
   padding: 10px;
   border-radius: 12px;
   margin-bottom: 20px;
+  position: relative;
 }
 .sec-name {
   font-size: 0.9rem;
@@ -343,6 +350,21 @@ li:last-of-type {
   white-space: pre-wrap;
   line-height: 2;
 }
+.crud {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 .crud-btn {
-  border: 1px solid red;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 0px 4px;
+  background-color: var(--surface-secondary);
+  border: 2px solid var(--border-s);
+  border-radius: 12px;
+  padding: 6px;
+}
+.crud-btn:hover {
+  color: var(--text-sec);
 }

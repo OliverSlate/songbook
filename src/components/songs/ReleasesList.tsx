@@ -19,7 +19,7 @@ export default function ReleasesList({
 }: ReleasesListProps) {
   return (
     <div className="releases">
-      {isEmpty && <p>You have no releases!</p>}
+      {isEmpty && <h3>You have no releases!</h3>}
       {albumTree.map(({ album, songs }) => (
         <div key={album.id} className="release-group">
           <div
