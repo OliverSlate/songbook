@@ -222,10 +222,12 @@ option {
   left: 12px;
   width: 50px;
   height: 50px;
-  background-color: var(--border-def);
   font-weight: 900;
   font-size: 1.3em;
   border-radius: 50%;
+}
+.exit:hover {
+  background-color: var(--border-def);
 }
 .task-title {
   font-family: "DM Mono";
@@ -340,4 +342,7 @@ li:last-of-type {
 .sec-content {
   white-space: pre-wrap;
   line-height: 2;
+}
+.crud-btn {
+  border: 1px solid red;
 }

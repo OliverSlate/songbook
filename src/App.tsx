@@ -2,13 +2,14 @@ import { useState } from "react";
 import Songs from "./components/Songs";
 import Todo from "./components/Todo";
 
-type AppState = "Songs" | "Todo" | "Data";
+type AppState = "Songs" | "Todo" | "Notes" | "Data";
 
 function App() {
   const [appState, setAppState] = useState<AppState>("Songs");
   const views = {
     Songs: <Songs></Songs>,
     Todo: <Todo></Todo>,
+    Notes: <p>Notes view in the future</p>,
     Data: <p>Data view in the future</p>,
   };
   return (
@@ -30,6 +31,12 @@ function App() {
             onClick={() => setAppState("Todo")}
           >
             To Do
+          </button>
+          <button
+            className={appState === "Notes" ? "active" : ""}
+            onClick={() => setAppState("Notes")}
+          >
+            Notes
           </button>
           <button
             className={appState === "Data" ? "active" : ""}

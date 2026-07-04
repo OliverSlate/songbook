@@ -3,9 +3,23 @@ import AddAlbumModal from "./songs/AddAlbumModal";
 import AddSectionModal from "./songs/AddSectionModal";
 import AddSongModal from "./songs/AddSongModal";
 import CurrentPanel from "./songs/CurrentPanel";
+import DeleteAlbumModal from "./songs/DeleteAlbumModal";
+import DeleteSectionModal from "./songs/DeleteSectionModal";
+import DeleteSongModal from "./songs/DeleteSongModal";
 import ReleasesList from "./songs/ReleasesList";
 import SongsHeader from "./songs/SongsHeader";
+import UpdateAlbumModal from "./songs/UpdateAlbumModal";
+import UpdateSectionModal from "./songs/UpdateSectionModal";
+import UpdateSongModal from "./songs/UpdateSongModal";
 import type { Album, Selection, Section, Song } from "./songs/types";
+
+/*
+  July 3, 2026 @ 10:56 PM
+  Dear developers or otherwise curious people looking into my code
+  This file once was over twice as long and containted 80% of the app in a gigantic hierarchical mess
+  This is my message - don't be like me, write good code from the start, so you dont have to restructure the entire app
+  because you're unable to read the code anymore. Cheers
+*/
 
 export default function Songs() {
   const [albums, setAlbums] = useState<{ albums: Album[] }>(() => {
@@ -36,18 +50,83 @@ export default function Songs() {
   const [showAddAlbum, setShowAddAlbum] = useState(false);
   const [newAlbumName, setNewAlbumName] = useState("");
   const [newRelDate, setNewRelDate] = useState("");
+  const [showUpdateAlbum, setShowUpdateAlbum] = useState(false);
+  const [showDeleteAlbum, setShowDeleteAlbum] = useState(false);
+  const [editAlbumName, setEditAlbumName] = useState("");
+  const [editRelDate, setEditRelDate] = useState("");
 
   const [showAddSong, setShowAddSong] = useState(false);
   const [newSongName, setNewSongName] = useState("");
   const [newSongKey, setNewSongKey] = useState("");
   const [newSongTempo, setNewSongTempo] = useState<string>("");
   const [newAlbumId, setNewAlbumId] = useState<string | null>(null);
+  const [showUpdateSong, setShowUpdateSong] = useState(false);
+  const [showDeleteSong, setShowDeleteSong] = useState(false);
+  const [editSongName, setEditSongName] = useState("");
+  const [editSongKey, setEditSongKey] = useState("");
+  const [editSongTempo, setEditSongTempo] = useState("");
+  const [editAlbumId, setEditAlbumId] = useState<string | null>(null);
 
   const [showAddSec, setShowAddSec] = useState(false);
   const [newSecName, setNewSecName] = useState("");
   const [newSecContent, setNewSecContent] = useState("");
+  const [showUpdateSec, setShowUpdateSec] = useState(false);
+  const [showDeleteSec, setShowDeleteSec] = useState(false);
+  const [activeSectionIndex, setActiveSectionIndex] = useState<number | null>(
+    null,
+  );
+  const [editSecName, setEditSecName] = useState("");
+  const [editSecContent, setEditSecContent] = useState("");
 
   const [err, setErr] = useState("");
+  function deleteAlbum() {
+    if (selected?.type !== "album") return;
+    const albumId = selected.id;
+    setAlbums((prev: { albums: Album[] }) => {
+      const updated = {
+        ...prev,
+        albums: prev.albums.filter((album) => album.id !== albumId),
+      };
+      localStorage.setItem("albums", JSON.stringify(updated));
+      return updated;
+    });
+    setSongs((prev: { songs: Song[] }) => {
+      const updated = {
+        songs: prev.songs.map((song) =>
+          song.albumId === albumId ? { ...song, albumId: null } : song,
+        ),
+      };
+      localStorage.setItem("songs", JSON.stringify(updated));
+      return updated;
+    });
+    setSelected(null);
+    setErr("");
+    setShowDeleteAlbum(false);
+  }
+
+  function updateAlbum() {
+    if (selected?.type !== "album") return;
+    if (editAlbumName === "" || editRelDate === "") {
+      setErr("All fields must be non-empty.");
+      return;
+    }
+    setAlbums((prev: { albums: Album[] }) => {
+      const updated = {
+        ...prev,
+        albums: prev.albums.map((album) =>
+          album.id === selected.id
+            ? { ...album, name: editAlbumName, releaseDate: editRelDate }
+            : album,
+        ),
+      };
+      localStorage.setItem("albums", JSON.stringify(updated));
+      return updated;
+    });
+    setEditAlbumName("");
+    setEditRelDate("");
+    setErr("");
+    setShowUpdateAlbum(false);
+  }
 
   function addAlbum() {
     /*
@@ -73,6 +152,51 @@ export default function Songs() {
     setErr("");
     setShowAddAlbum(false);
   }
+  function deleteSong() {
+    if (selected?.type !== "song") return;
+    const songId = selected.id;
+    setSongs((prev: { songs: Song[] }) => {
+      const updated = {
+        songs: prev.songs.filter((song) => song.id !== songId),
+      };
+      localStorage.setItem("songs", JSON.stringify(updated));
+      return updated;
+    });
+    setSelected(null);
+    setErr("");
+    setShowDeleteSong(false);
+  }
+
+  function updateSong() {
+    if (selected?.type !== "song") return;
+    if (editSongName === "") {
+      setErr("Song name can't be empty.");
+      return;
+    }
+    setSongs((prev: { songs: Song[] }) => {
+      const updated = {
+        songs: prev.songs.map((song) =>
+          song.id === selected.id
+            ? {
+                ...song,
+                name: editSongName,
+                key: editSongKey,
+                tempo: editSongTempo,
+                albumId: editAlbumId,
+              }
+            : song,
+        ),
+      };
+      localStorage.setItem("songs", JSON.stringify(updated));
+      return updated;
+    });
+    setEditSongName("");
+    setEditSongKey("");
+    setEditSongTempo("");
+    setEditAlbumId(null);
+    setErr("");
+    setShowUpdateSong(false);
+  }
 
   function addSong() {
     if (newSongName === "") {
@@ -97,6 +221,60 @@ export default function Songs() {
     setNewSongTempo("");
     setErr("");
     setShowAddSong(false);
+  }
+  function deleteSection() {
+    if (selected?.type !== "song" || activeSectionIndex === null) return;
+    setSongs((prev: { songs: Song[] }) => {
+      const updatedSongs = prev.songs.map((song) => {
+        if (song.id !== selected.id) return song;
+        const sections = song.sections
+          .filter((_, index) => index !== activeSectionIndex)
+          .map((section, index) => ({ ...section, order: index }));
+        return {
+          ...song,
+          sections,
+        };
+      });
+
+      const updated = { songs: updatedSongs };
+      localStorage.setItem("songs", JSON.stringify(updated));
+      return updated;
+    });
+    setActiveSectionIndex(null);
+    setEditSecName("");
+    setEditSecContent("");
+    setErr("");
+    setShowDeleteSec(false);
+  }
+
+  function updateSection() {
+    if (selected?.type !== "song" || activeSectionIndex === null) return;
+    if (editSecName === "") {
+      setErr("Name can't be empty.");
+      return;
+    }
+    setSongs((prev: { songs: Song[] }) => {
+      const updatedSongs = prev.songs.map((song) => {
+        if (song.id !== selected.id) return song;
+        return {
+          ...song,
+          sections: song.sections.map((section, index) =>
+            index === activeSectionIndex
+              ? { ...section, name: editSecName, content: editSecContent }
+              : section,
+          ),
+        };
+      });
+
+      const updated = { songs: updatedSongs };
+      localStorage.setItem("songs", JSON.stringify(updated));
+      return updated;
+    });
+    setActiveSectionIndex(null);
+    setEditSecName("");
+    setEditSecContent("");
+    setErr("");
+    setShowUpdateSec(false);
   }
 
   function addSection({ selected }: { selected: Selection }) {
@@ -137,6 +315,64 @@ export default function Songs() {
       setSelected(null);
     } else setSelected({ type: "song", id: songId });
   }
+
+  function openUpdateAlbum(album: Album) {
+    setSelected({ type: "album", id: album.id });
+    setEditAlbumName(album.name);
+    setEditRelDate(album.releaseDate);
+    setErr("");
+    setShowUpdateAlbum(true);
+  }
+
+  function openDeleteAlbum(album: Album) {
+    setSelected({ type: "album", id: album.id });
+    setErr("");
+    setShowDeleteAlbum(true);
+  }
+
+  function openUpdateSong(song: Song) {
+    setSelected({ type: "song", id: song.id });
+    setEditSongName(song.name);
+    setEditSongKey(song.key);
+    setEditSongTempo(song.tempo);
+    setEditAlbumId(song.albumId);
+    setErr("");
+    setShowUpdateSong(true);
+  }
+
+  function openDeleteSong(song: Song) {
+    setSelected({ type: "song", id: song.id });
+    setErr("");
+    setShowDeleteSong(true);
+  }
+
+  function openUpdateSection(sectionIndex: number, section: Section) {
+    setActiveSectionIndex(sectionIndex);
+    setEditSecName(section.name);
+    setEditSecContent(section.content);
+    setErr("");
+    setShowUpdateSec(true);
+  }
+
+  function openDeleteSection(sectionIndex: number, section: Section) {
+    setActiveSectionIndex(sectionIndex);
+    setEditSecName(section.name);
+    setErr("");
+    setShowDeleteSec(true);
+  }
+
+  const selectedAlbum =
+    selected?.type === "album"
+      ? albums.albums.find((album) => album.id === selected.id)
+      : undefined;
+  const selectedSong =
+    selected?.type === "song"
+      ? songs.songs.find((song) => song.id === selected.id)
+      : undefined;
+  const activeSection =
+    activeSectionIndex !== null
+      ? selectedSong?.sections[activeSectionIndex]
+      : undefined;
 
   return (
     <>
@@ -191,6 +427,12 @@ export default function Songs() {
             songs={songs.songs}
             onSongSelect={(songId) => setSelected({ type: "song", id: songId })}
             onAddSection={() => setShowAddSec(true)}
+            onEditAlbum={openUpdateAlbum}
+            onDeleteAlbum={openDeleteAlbum}
+            onEditSong={openUpdateSong}
+            onDeleteSong={openDeleteSong}
+            onEditSection={openUpdateSection}
+            onDeleteSection={openDeleteSection}
           />
         </div>
       </div>
@@ -205,6 +447,86 @@ export default function Songs() {
           onSectionNameChange={setNewSecName}
           onSectionContentChange={setNewSecContent}
           onSubmit={() => addSection({ selected })}
+        />
+      )}
+      {showUpdateAlbum && (
+        <UpdateAlbumModal
+          albumName={editAlbumName}
+          releaseDate={editRelDate}
+          err={err}
+          onClose={() => {
+            setShowUpdateAlbum(false);
+            setErr("");
+          }}
+          onAlbumNameChange={setEditAlbumName}
+          onReleaseDateChange={setEditRelDate}
+          onSubmit={() => updateAlbum()}
+        />
+      )}
+      {showDeleteAlbum && selectedAlbum && (
+        <DeleteAlbumModal
+          albumName={selectedAlbum.name}
+          err={err}
+          onClose={() => {
+            setShowDeleteAlbum(false);
+            setErr("");
+          }}
+          onSubmit={() => deleteAlbum()}
+        />
+      )}
+      {showUpdateSong && (
+        <UpdateSongModal
+          albums={albums.albums}
+          songName={editSongName}
+          songKey={editSongKey}
+          songTempo={editSongTempo}
+          albumId={editAlbumId}
+          err={err}
+          onClose={() => {
+            setShowUpdateSong(false);
+            setErr("");
+          }}
+          onSongNameChange={setEditSongName}
+          onSongKeyChange={setEditSongKey}
+          onSongTempoChange={setEditSongTempo}
+          onAlbumChange={setEditAlbumId}
+          onSubmit={() => updateSong()}
+        />
+      )}
+      {showDeleteSong && selectedSong && (
+        <DeleteSongModal
+          songName={selectedSong.name}
+          err={err}
+          onClose={() => {
+            setShowDeleteSong(false);
+            setErr("");
+          }}
+          onSubmit={() => deleteSong()}
+        />
+      )}
+      {showUpdateSec && (
+        <UpdateSectionModal
+          sectionName={editSecName}
+          sectionContent={editSecContent}
+          err={err}
+          onClose={() => {
+            setShowUpdateSec(false);
+            setErr("");
+          }}
+          onSectionNameChange={setEditSecName}
+          onSectionContentChange={setEditSecContent}
+          onSubmit={() => updateSection()}
+        />
+      )}
+      {showDeleteSec && activeSection && (
+        <DeleteSectionModal
+          sectionName={activeSection.name}
+          err={err}
+          onClose={() => {
+            setShowDeleteSec(false);
+            setErr("");
+          }}
+          onSubmit={() => deleteSection()}
         />
       )}
     </>
