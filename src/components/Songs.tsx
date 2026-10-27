@@ -21,14 +21,32 @@ import type { Album, Selection, Section, Song } from "./songs/types";
   because you're unable to read the code anymore. Cheers
 */
 
+function loadSongs(): { songs: Song[] } {
+  const stored = localStorage.getItem("songs");
+  if (!stored) return { songs: [] };
+
+  const savedSongs = JSON.parse(stored) as { songs: Song[] };
+  let migrated = false;
+  const songs = savedSongs.songs.map((song) => {
+    if (song.isFinished == null) {
+      migrated = true;
+      return { ...song, isFinished: false };
+    }
+    return song;
+  });
+
+  const data = { ...savedSongs, songs };
+  if (migrated) localStorage.setItem("songs", JSON.stringify(data));
+  return data;
+}
+
 export default function Songs() {
   const [albums, setAlbums] = useState<{ albums: Album[] }>(() => {
     const stored = localStorage.getItem("albums");
     return stored ? JSON.parse(stored) : { albums: [] };
   });
   const [songs, setSongs] = useState<{ songs: Song[] }>(() => {
-    const stored = localStorage.getItem("songs");
-    return stored ? JSON.parse(stored) : { songs: [] };
+    return loadSongs();
   });
   const [selected, setSelected] = useState<Selection>(null);
 
@@ -208,6 +226,7 @@ export default function Songs() {
       name: newSongName,
       key: newSongKey,
       tempo: newSongTempo,
+      isFinished: false,
       albumId: newAlbumId,
       sections: [],
     };
@@ -361,6 +380,20 @@ export default function Songs() {
     setShowDeleteSec(true);
   }
 
+  function toggleSongFinished(songId: string) {
+    setSongs((prev: { songs: Song[] }) => {
+      const updated = {
+        songs: prev.songs.map((song) =>
+          song.id === songId
+            ? { ...song, isFinished: !song.isFinished }
+            : song,
+        ),
+      };
+      localStorage.setItem("songs", JSON.stringify(updated));
+      return updated;
+    });
+  }
+
   const selectedAlbum =
     selected?.type === "album"
       ? albums.albums.find((album) => album.id === selected.id)
@@ -426,6 +459,7 @@ export default function Songs() {
             albums={albums.albums}
             songs={songs.songs}
             onSongSelect={(songId) => setSelected({ type: "song", id: songId })}
+            onToggleSongFinished={toggleSongFinished}
             onAddSection={() => setShowAddSec(true)}
             onEditAlbum={openUpdateAlbum}
             onDeleteAlbum={openDeleteAlbum}

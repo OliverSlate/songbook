@@ -290,9 +290,26 @@ option {
   border: 2px solid var(--border-def);
   border-radius: 12px;
   color: var(--accent-light);
-}
-.info:first-child {
   margin-right: 10px;
+}
+.tree-finished {
+    color: #8cdb8c;
+}
+.finished {
+  color: #8cdb8c;
+  background-color: #173017;
+  border-color: #2d732d;
+}
+.not-finished {
+  color: #e38787;
+  background-color: #301717;
+  border-color: #732d2d;
+}
+.status-badge.finished:hover {
+  background-color: #214521;
+}
+.status-badge.not-finished:hover {
+  background-color: #452121;
 }
 li {
   list-style: none;

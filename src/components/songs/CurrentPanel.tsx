@@ -5,6 +5,7 @@ type CurrentPanelProps = {
   albums: Album[];
   songs: Song[];
   onSongSelect: (songId: string) => void;
+  onToggleSongFinished: (songId: string) => void;
   onAddSection: () => void;
   onEditAlbum: (album: Album) => void;
   onDeleteAlbum: (album: Album) => void;
@@ -19,6 +20,7 @@ export default function CurrentPanel({
   albums,
   songs,
   onSongSelect,
+  onToggleSongFinished,
   onAddSection,
   onEditAlbum,
   onDeleteAlbum,
@@ -78,6 +80,13 @@ export default function CurrentPanel({
       <div className="view-info">
         <p className="info">Key: {song.key}</p>
         <p className="info">{song.tempo} BPM</p>
+        <button
+          className={`info ${song.isFinished ? "finished" : "not-finished"}`}
+          onClick={() => onToggleSongFinished(song.id)}
+          aria-pressed={song.isFinished ?? false}
+        >
+          {song.isFinished ? "Finished" : "Not finished"}
+        </button>
       </div>
       <div className="sections">
         {song.sections.map((sec, index) => (

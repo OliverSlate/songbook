@@ -17,6 +17,7 @@ export type Song = {
   name: string;
   key: string;
   tempo: string;
+  isFinished: boolean | null;
   albumId: string | null;
   sections: Section[];
 };

@@ -31,7 +31,7 @@ export default function ReleasesList({
           {songs.map((song) => (
             <div
               key={song.id}
-              className={`release-item song-item ${selected?.type === "song" && selected.id === song.id ? "selected" : ""}`}
+              className={`release-item song-item ${selected?.type === "song" && selected.id === song.id ? "selected" : ""} ${song.isFinished ? "tree-finished" : ""}`}
               onClick={() => onSongSelect(song.id)}
             >
               {song.name}
